@@ -153,6 +153,10 @@ lancez le script de restauration ``restore`` comme ceci et suivez les instructio
    ```bash
    docker exec -it qualimarc-db-dumper restore
    ```
+pour pouvoir executer en ignorant le mode interactif en utilisant la syntaxe suivante:
+   ```bash
+   docker exec -it qualimarc-db-dumper restore <filename> <db_type> <db_hostname> <db_name> <db_user> <db_pass> <db_port>
+   ```
 C'est bon, la base de données qualimarc est alors restaurée
 
 - #### Verifier si tout marche
