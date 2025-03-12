@@ -133,37 +133,109 @@ Le répertoire suivant est à exclure des sauvegardes :
 
 ### Restauration depuis une sauvegarde
 
-- #### Si on a plus aucun contenair ni de docker-compose.yml
+- Se Connecter avec son compte développeur sur la machine de déploiement diplotaxis1-prod (via Putty etc.)
 
-Dans ce cas, cloner ce projet sur un serveur ayant acces au commande docker et git,
-et demander au SIRE s'ils ont acces à une sauvegarde du ``.env`` afin de mettre ce fichier ``.env`` dans le repertoire ``qualimarc-docker``.  
-
-- #### Si la base de donnée qualimarc-db est vide
-
-Dans ce cas, si le repertoire ``../volumes/qualimarc-db/dump/`` n'est pas disponible, alors il faut lancer uniquement les conteneurs ``qualimarc-db`` et ``qualimarc-db-dumper`` pour qu'il créé et s'associe au repertoire :
-   ```bash
-   docker-compose up -d qualimarc-db qualimarc-db-dumper
-   ```
-Ensuite si le repertoire ``../volumes/qualimarc-db/dump/`` est disponible, demander au SIRE s'ils ont acces à une sauvegarde des dumps de la base de donnée. Ensuite prendre le dumps de la plus fiable et récente et la placer dans le repertoire ``../volumes/qualimarc-db/dump/`` (Le dump devrait se nommer sous cette forme là ``pgsql_qualimarc_qualimarc-db_20220801-143201.sql.gz``).
-Une fois le dump placé, lancez uniquement les conteneurs ``qualimarc-db`` et ``qualimarc-db-dumper`` s'ils sont pas déjà lancé :
-   ```bash
-   docker-compose up -d qualimarc-db qualimarc-db-dumper
-   ```
-lancez le script de restauration ``restore`` comme ceci et suivez les instructions :
-   ```bash
-   docker exec -it qualimarc-db-dumper restore
-   ```
-pour pouvoir executer en ignorant le mode interactif en utilisant la syntaxe suivante:
-   ```bash
-   docker exec -it qualimarc-db-dumper bash -c 'restore <filename_du_dump> $DB_TYPE $DB_HOST $DB_NAME $DB_USER $DB_PASS 5432'
-   ```
-C'est bon, la base de données qualimarc est alors restaurée
-
-- #### Verifier si tout marche
-Lancez alors toute l'application qualimarc et vérifiez qu'elle fonctionne bien :
+- Se positionner dans le répertoire des applications :
 ```bash
-cd /opt/pod/qualimarc-docker/
-docker-compose up -d
+cd /opt/pod
+```
+- Récupérer le projet qualimarc-docker :
+```bash
+git clone https://github.com/abes-esr/qualimarc-docker.git
+```
+- Récupérer le .env depuis sotora (authentification nécessaire) :
+```bash
+rsync -av devel@sotora.v104.abes.fr:/backup_pool/diplotaxis1-prod/daily.0/racine/opt/pod/qualimarc-docker/.env /opt/pod/qualimarc-docker/.env
+```
+*Pour sélectionner une sauvegarde autre que la plus récente, il suffit de remplacer daily.0 dans la commande par le jour souhaité (daily.1 pour la veille, daily.2 pour l'avant-veille, etc.)*
+
+## Restauration des donneés de l'application
+
+- Se Connecter avec son compte développeur sur la machine de déploiement diplotaxis1-prod (via Putty etc.)
+
+- Se positionner dans le répertoire de l'application :
+```bash
+cd /opt/pod/qualimarc-docker
+```
+
+- Vérifier que les conteneurs sont arrêtés :
+```bash
+sudo docker compose down --remove-orphans	
+```
+- Redémarrer uniquement qualimarc-db et qualimarc-db-dumper :
+```bash
+sudo docker compose up -d qualimarc-db qualimarc-db-dumper
+```
+*Ne pas redémarrer les containers qualimarc-batch ou qualimarc-api dont la couche JPA recrée la base de données automatiquement.*
+
+**Les sept dernières sauvegardes sont conservées et accessibles sur la machine diplotaxis1-prod, qui est également sauvegardée sur la machine sotora. Ainsi, la restauration de la base peut se faire soit directement à partir des sauvegardes de diplotaxis1-prod, soit, en cas d'indisponibilité ou pour des sauvegardes plus anciennes que 7 jours, depuis sotora.**
+
+- Choisir l'une des deux options suivantes :
+    - [Restauration depuis diplotaxis1-prod](#restauration-depuis-diplotaxis1-prod)
+    - [Restauration depuis sotora](#restauration-depuis-sotora)
+
+### Restauration depuis diplotaxis1-prod
+
+- Supprimer le schéma, la base de données existante et recréer la base vide :
+```bash
+sudo docker exec -it qualimarc-db bash -c 'psql -U $POSTGRES_USER -d $POSTGRES_DB -c "DROP SCHEMA public CASCADE;"'
+sudo docker exec -it qualimarc-db bash -c 'dropdb -f -U $POSTGRES_USER $POSTGRES_DB'
+sudo docker exec -it qualimarc-db bash -c 'createdb -U $POSTGRES_USER $POSTGRES_DB'
+# 'bash -c' est utilisé pour permettre l'interprétation des variables d'environnement 
+# du conteneur (POSTGRES_USER, POSTGRES_DB) par les commandes psql, dropdb et createdb.
+
+```
+- Choisir l'une des deux options suivantes :
+    - [Restauration du schéma et des données avec la sauvegarde la plus récente](#restauration-du-schéma-et-des-données-avec-la-sauvegarde-la-plus-récente)
+    - [Restauration du schéma et des données avec une sauvegarde choisie](#restauration-du-schéma-et-des-données-avec-une-sauvegarde-choisie)
+
+#### Restauration du schéma et des données avec la sauvegarde la plus récente
+```bash
+sudo docker exec -it qualimarc-db-dumper bash -c 'restore $(readlink -f /backup/latest-pgsql_qualimarc_qualimarc-db) $DB_TYPE $DB_HOST $DB_NAME $DB_USER $DB_PASS 5432'	
+# 'bash -c' est utilisé pour permettre l'interprétation des variables d'environnement 
+# du conteneur (DB_TYPE, DB_HOST, DB_NAME, DB_USER, DB_PASS) par la commande restore.
+# Pour utiliser le fichier de sauvegarde correct, 'readlink -f' permet de remplacer l'alias 'latest-pgsql_qualimarc_qualimarc-db'"
+# par son chemin absolu, nécessaire à la commande de restauration.
+```
+#### Restauration du schéma et des données avec une sauvegarde choisie
+- Lister les sauvegardes disponibles :
+```bash
+ll volumes/qualimarc-db/dump/
+```
+- Compléter la commande avec le nom de la sauvegarde à restaurer, par exemple :
+```bash
+sudo docker exec -it qualimarc-db-dumper bash -c 'restore /backup/pgsql_qualimarc_qualimarc-db_20250221-144114.sql.gz $DB_TYPE $DB_HOST $DB_NAME $DB_USER $DB_PASS 5432'
+# 'bash -c' est utilisé pour permettre l'interprétation des variables d'environnement 
+# du conteneur (DB_TYPE, DB_HOST, DB_NAME, DB_USER, DB_PASS) par la commande restore.
+```
+
+### Restauration depuis sotora
+
+- Récupérer la sauvegarde depuis sotora :
+```bash
+rsync -avL devel@sotora.v104.abes.fr:/backup_pool/diplotaxis1-prod/daily.0/racine/opt/pod/qualimarc-docker/volumes/qualimarc-db/dump/latest-pgsql_qualimarc_qualimarc-db /opt/pod/qualimarc-docker/volumes/qualimarc-db/dump/pgsql_qualimarc_qualimarc-db_sotora.sql.gz
+```
+*Pour sélectionner une sauvegarde autre que la plus récente, il suffit de remplacer daily.0 dans la commande par le jour souhaité (daily.1 pour la veille, daily.2 pour l'avant-veille, etc.)*
+
+- Supprimer le schéma, la base de données existante et recréer la base vide :
+```bash
+sudo docker exec -it qualimarc-db bash -c 'psql -U $POSTGRES_USER -d $POSTGRES_DB -c "DROP SCHEMA public CASCADE;"'
+sudo docker exec -it qualimarc-db bash -c 'dropdb -f -U $POSTGRES_USER $POSTGRES_DB'
+sudo docker exec -it qualimarc-db bash -c 'createdb -U $POSTGRES_USER $POSTGRES_DB'
+# 'bash -c' est utilisé pour permettre l'interprétation des variables d'environnement 
+# du conteneur (POSTGRES_USER, POSTGRES_DB) par les commandes psql, dropdb et createdb.
+```
+- Restaurer le schéma et les données :
+```bash
+sudo docker exec -it qualimarc-db-dumper bash -c 'restore /backup/pgsql_qualimarc_qualimarc-db_sotora.sql.gz $DB_TYPE $DB_HOST $DB_NAME $DB_USER $DB_PASS 5432' 
+# 'bash -c' est utilisé pour permettre l'interprétation des variables d'environnement 
+# du conteneur (DB_TYPE, DB_HOST, DB_NAME, DB_USER, DB_PASS) par la commande restore.
+```
+La restauration est terminée.
+
+on peut maintenant lancer la commande suivante pour redémarrer l'application
+```bash
+sudo docker compose up -d
 ```
 
 ## Développements
