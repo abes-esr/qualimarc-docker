@@ -131,7 +131,8 @@ Les éléments suivants sont à sauvegarder:
 Le répertoire suivant est à exclure des sauvegardes :
 - ``/opt/pod/qualimarc-docker/volumes/qualimarc-db/pgdata/`` : contient les données binaires de la base de données postgresql qualimarc
 
-### Restauration depuis une sauvegarde
+## Restauration de l'application
+
 
 - Se Connecter avec son compte développeur sur la machine de déploiement diplotaxis1-prod (via Putty etc.)
 
@@ -171,8 +172,8 @@ sudo docker compose up -d qualimarc-db qualimarc-db-dumper
 **Les sept dernières sauvegardes sont conservées et accessibles sur la machine diplotaxis1-prod, qui est également sauvegardée sur la machine sotora. Ainsi, la restauration de la base peut se faire soit directement à partir des sauvegardes de diplotaxis1-prod, soit, en cas d'indisponibilité ou pour des sauvegardes plus anciennes que 7 jours, depuis sotora.**
 
 - Choisir l'une des deux options suivantes :
-    - [Restauration depuis diplotaxis1-prod](#restauration-depuis-diplotaxis1-prod)
-    - [Restauration depuis sotora](#restauration-depuis-sotora)
+  - [Restauration depuis diplotaxis1-prod](#restauration-depuis-diplotaxis1-prod)
+  - [Restauration depuis sotora](#restauration-depuis-sotora)
 
 ### Restauration depuis diplotaxis1-prod
 
@@ -186,8 +187,8 @@ sudo docker exec -it qualimarc-db bash -c 'createdb -U $POSTGRES_USER $POSTGRES_
 
 ```
 - Choisir l'une des deux options suivantes :
-    - [Restauration du schéma et des données avec la sauvegarde la plus récente](#restauration-du-schéma-et-des-données-avec-la-sauvegarde-la-plus-récente)
-    - [Restauration du schéma et des données avec une sauvegarde choisie](#restauration-du-schéma-et-des-données-avec-une-sauvegarde-choisie)
+  - [Restauration du schéma et des données avec la sauvegarde la plus récente](#restauration-du-schéma-et-des-données-avec-la-sauvegarde-la-plus-récente)
+  - [Restauration du schéma et des données avec une sauvegarde choisie](#restauration-du-schéma-et-des-données-avec-une-sauvegarde-choisie)
 
 #### Restauration du schéma et des données avec la sauvegarde la plus récente
 ```bash
