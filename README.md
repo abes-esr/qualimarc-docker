@@ -44,7 +44,7 @@ cp .env-dist .env
 # personnaliser alors le contenu du .env
 ```
 
-**Note : les mots de passe de la base de donnée xml de test ne sont pas présent dans le fichier au moment de la copie. Vous devez aller les renseigner manuellement en editant le fichier dans la console avec nano par exemple**
+**Note : les mots de passe de la base de données xml de test ne sont pas présents dans le fichier au moment de la copie. Il faut les renseigner manuellement en éditant le fichier dans la console avec nano par exemple**
 
 Démarrer l'application :
 ```bash
@@ -52,7 +52,7 @@ cd /opt/pod/qualimarc-docker/
 docker-compose up -d
 ```
 
-Pour information, une base de données postgresql vide sera alors automatiquement initialisée. Ses données binaires seront placées dans le répertoire persistant suivante (attention le user unix de ce répertoire est celui du conteneur postgresql qui n'est pas le même que celui que vous utilisez pour installer l'application) : ``/opt/pod/qualimarc-docker/volumes/qualimarc-db/pgdata/``
+Pour information, une base de données postgresql vide sera alors automatiquement initialisée. Ses données binaires seront placées dans le répertoire persistant suivant : (attention le user unix de ce répertoire est celui du conteneur postgresql qui n'est pas le même que celui utilisé pour installer l'application) : ``/opt/pod/qualimarc-docker/volumes/qualimarc-db/pgdata/``
 
 ## Démarrage et arrêt
 
@@ -84,18 +84,18 @@ cd /opt/pod/qualimarc-docker/
 docker-compose logs -f --tail=100
 ```
 
-Cela va afficher les 100 dernière lignes de logs générées par l'application et toutes les suivantes jusqu'au CTRL+C qui stoppera l'affichage temps réel des logs.
+Cela affiche les 100 dernières lignes de logs générées par l'application et toutes les suivantes jusqu'au CTRL+C qui stoppera l'affichage temps réel des logs.
 
 
 ## Configuration
 
-Pour configurer l'application, vous devez créer et personnaliser un fichier ``/opt/pod/qualimarc-docker/.env`` (cf section [Installation](#installation)). Les paramètres à placer dans ce fichier ``.env`` et des exemples de valeurs sont indiqués dans le fichier [``.env-dist``](https://github.com/abes-esr/qualimarc-docker/blob/develop/.env-dist)
+Pour configurer l'application, il faut créer et personnaliser le fichier ``/opt/pod/qualimarc-docker/.env`` (cf section [Installation](#installation)). Les paramètres à placer dans ce fichier ``.env`` et des exemples de valeurs sont indiqués dans le fichier [``.env-dist``](https://github.com/abes-esr/qualimarc-docker/blob/develop/.env-dist)
 
 ### Spécificité pour la mise à jour de POSTGRES_PASSWORD
 
 Pour modifier la valeur du mot de passe de la base de données postgresql de qualimarc sur une base de données déjà initialisée (c'est à dire que le conteneur ``qualimarc-db`` a déjà été lancé une première fois), il est nécessaire de procéder en deux étapes :
-1) modifier la valeur de ``POSTGRES_PASSWORD`` dans votre fichier ``.env``
-2) lancer la commande suivante pour mettre à jour le mot de passe à l'interrieur de la base de données déjà initialisée (cela suppose que le conteneur ``qualimarc-db``  soit UP), et bien sur adaptez la valeur du mot de passe à la place de la chaine de caractères "qualimarcsecret2" donnée pour exemple ci-dessous :
+1) modifier la valeur de ``POSTGRES_PASSWORD`` dans le fichier ``.env``
+2) lancer la commande suivante pour mettre à jour le mot de passe dans la base de données déjà initialisée (cela suppose que le conteneur ``qualimarc-db``  soit UP) et remplacer la chaine de caractères "qualimarcsecret2" donnée pour exemple ci-dessous comme mot de passe :
    ```bash
    docker exec qualimarc-db psql -U qualimarc -c "alter user qualimarc with password 'qualimarcsecret2';"
    ```
@@ -134,7 +134,7 @@ Le répertoire suivant est à exclure des sauvegardes :
 ## Restauration de l'application
 
 
-- Se Connecter avec son compte développeur sur la machine de déploiement diplotaxis1-prod (via Putty etc.)
+- Se connecter avec son compte développeur sur la machine de déploiement diplotaxis1-prod (via Putty etc.)
 
 - Se positionner dans le répertoire des applications :
 ```bash
