@@ -122,7 +122,7 @@ services:
   # qualimarc-db
   # Base de données postgresql de qualimarc
   qualimarc-db:
-    image: abesesr/postgres-fr_fr:15.1.0
+    image: abesesr/postgres-fr_fr:17.4.0
     container_name: qualimarc-db
     restart: unless-stopped
     mem_limit: ${MEM_LIMIT}
@@ -135,10 +135,6 @@ services:
       POSTGRES_PASSWORD: ${QUALIMARC_DB_POSTGRES_PASSWORD}
     volumes:
       - ./volumes/qualimarc-db/pgdata/:/var/lib/postgresql/data/
-    # todo delete( test en dev)
-    ports:
-      - 5432:5432
-      #- 11083:5432
     labels:
       # pour envoyer les logs dans le puits de log de l'abes
       - "co.elastic.logs/enabled=true"
@@ -175,7 +171,7 @@ services:
   # (dump tous les jours pour les sauvegardes)
   # https://github.com/tiredofit/docker-db-backup
   qualimarc-db-dumper:
-    image: tiredofit/db-backup:4.0.35
+    image: tiredofit/db-backup:4.1.17
     container_name: qualimarc-db-dumper
     restart: unless-stopped
     mem_limit: ${MEM_LIMIT}
