@@ -177,6 +177,7 @@ services:
     mem_limit: ${MEM_LIMIT}
     memswap_limit: ${MEM_LIMIT}
     cpus: ${CPU_LIMIT}
+    user: "1000:564406605"
     volumes:
         - ./volumes/qualimarc-db/dump/:/backup/
         - ./volumes/qualimarc-db-dumper/script/:/assets/scripts/post/:w
