@@ -183,7 +183,7 @@ services:
     depends_on:
         - qualimarc-db
     command: >
-      sh -c "chown -R 10000:564406605 /backup && exec /assets/scripts/start.sh"
+      sh -c "chown -R 10000:564406605 /backup && exec /init"
     environment:
       # DB_DUMP_BEGIN: "0130" <= tous les jours à 1h30 du matin GMT
       # DB_DUMP_FREQ: 1440 <= chaque jour
