@@ -179,7 +179,6 @@ services:
     cpus: ${CPU_LIMIT}
     volumes:
         - ./volumes/qualimarc-db/dump/:/backup/
-        - ./volumes/qualimarc-db-dumper/script/:/assets/scripts/post/:w
     depends_on:
         - qualimarc-db
     environment:
