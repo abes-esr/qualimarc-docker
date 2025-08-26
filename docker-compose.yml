@@ -135,6 +135,8 @@ services:
       POSTGRES_PASSWORD: ${QUALIMARC_DB_POSTGRES_PASSWORD}
     volumes:
       - ./volumes/qualimarc-db/pgdata/:/var/lib/postgresql/data/
+    ports:
+      - 11083:5432
     labels:
       # pour envoyer les logs dans le puits de log de l'abes
       - "co.elastic.logs/enabled=true"
