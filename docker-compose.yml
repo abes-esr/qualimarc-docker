@@ -134,7 +134,7 @@ services:
       POSTGRES_USER: ${QUALIMARC_DB_POSTGRES_USER}
       POSTGRES_PASSWORD: ${QUALIMARC_DB_POSTGRES_PASSWORD}
     volumes:
-      - ./volumes/qualimarc-db/pgdata/:/var/lib/postgresql/data/
+      - qualimarc-db-data:/var/lib/postgresql/data/
     ports:
       - 11083:5432
     labels:
@@ -249,5 +249,5 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.scope=qualimarc-watchtower-scope"
 
-
-
+volumes:
+  qualimarc-db-data:
