@@ -232,6 +232,8 @@ services:
         WUD_WATCHER_LOCAL_CRON: "*/1 * * * *"
         WUD_TRIGGER_DOCKER_AUTOUPDATE: "true"
         WUD_TRIGGER_DOCKER_AUTOUPDATE_CLEANUP: "true"
+        WUD_FILTER_CONTAINER_ENABLE: "true"
+        WUD_FILTER_CONTAINER_NAME_REGEX: "^qualimarc-.*"
         WUD_FILTER_LABEL_ENABLE: "true"
         WUD_FILTER_LABEL_LABEL: "wud.scope"
         WUD_FILTER_LABEL_VALUE: "qualimarc"
