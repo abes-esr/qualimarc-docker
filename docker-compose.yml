@@ -32,9 +32,7 @@ services:
       - "co.elastic.logs/processors.add_fields.target="
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=nginx"
-      # pour que les mises à jour de cette image soient auto-déployées par watchtower
-      - "qualimarc.wud.scope=true"
-
+      - "wud.watch=true"
 
 
   ############################
@@ -78,8 +76,7 @@ services:
       - "co.elastic.logs/processors.add_fields.target="
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
-      # pour que les mises à jour de cette image soient auto-déployées par watchtower
-      - "qualimarc.wud.scope=true"
+      - "wud.watch=true"
 
 
   qualimarc-batch:
@@ -115,8 +112,7 @@ services:
       - "co.elastic.logs/processors.add_fields.target="
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
-      # pour que les mises à jour de cette image soient auto-déployées par watchtower
-      - "qualimarc.wud.scope=true"
+      - "wud.watch=true"
 
   ##############################
   # qualimarc-db
@@ -231,7 +227,7 @@ services:
         WUD_TRIGGER_DOCKER_AUTOUPDATE: "true"
         WUD_TRIGGER_DOCKER_AUTOUPDATE_CLEANUP: "true"
         WUD_FILTER_LABEL_ENABLE: "true"
-        WUD_FILTER_LABEL_LABEL: "qualimarc.wud.scope"
+        WUD_FILTER_LABEL_LABEL: "wud.watch"
         WUD_FILTER_LABEL_VALUE: "true"
         WUD_NOTIFIER_SLACK_ENABLED: "true"
         WUD_NOTIFIER_SLACK_WEBHOOKURL: ${QUALIMARC_WUD_NOTIFICATION_SLACK_HOOK_URL}
