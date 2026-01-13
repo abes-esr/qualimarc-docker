@@ -33,7 +33,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=nginx"
       # pour que les mises à jour de cette image soient auto-déployées par watchtower
-      - "com.centurylinklabs.watchtower.scope=qualimarc-watchtower-scope"
+      - "qualimarc.wud.scope=true"
 
 
 
@@ -79,7 +79,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
       # pour que les mises à jour de cette image soient auto-déployées par watchtower
-      - "com.centurylinklabs.watchtower.scope=qualimarc-watchtower-scope"
+      - "qualimarc.wud.scope=true"
 
 
   qualimarc-batch:
@@ -116,7 +116,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
       # pour que les mises à jour de cette image soient auto-déployées par watchtower
-      - "com.centurylinklabs.watchtower.scope=qualimarc-watchtower-scope"
+      - "qualimarc.wud.scope=true"
 
   ##############################
   # qualimarc-db
@@ -215,39 +215,32 @@ services:
       - "co.elastic.logs/multiline.negate=true"
       - "co.elastic.logs/multiline.match=after"
 
+  qualimarc-whatsupdocker:
+      image: getwud/wud:latest
+      container_name: qualimarc-whatsupdocker
+      restart: unless-stopped
+      mem_limit: ${MEM_LIMIT}
+      memswap_limit: ${MEM_LIMIT}
+      cpus: ${CPU_LIMIT}
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        WUD_DOCKER_HOST: unix:///var/run/docker.sock
+        WUD_TRIGGER_DOCKER_WATCH: "true"
+        WUD_WATCHER_LOCAL_CRON: "*/1 * * * *"
+        WUD_TRIGGER_DOCKER_AUTOUPDATE: "true"
+        WUD_TRIGGER_DOCKER_AUTOUPDATE_CLEANUP: "true"
+        WUD_FILTER_LABEL_ENABLE: "true"
+        WUD_FILTER_LABEL_LABEL: "qualimarc.wud.scope"
+        WUD_FILTER_LABEL_VALUE: "true"
+        WUD_NOTIFIER_SLACK_ENABLED: "true"
+        WUD_NOTIFIER_SLACK_WEBHOOKURL: ${QUALIMARC_WUD_NOTIFICATION_SLACK_HOOK_URL}
+        WUD_NOTIFIER_SLACK_CHANNEL: "#notif-qualimarc"
+        WUD_NOTIFIER_SLACK_USERNAME: ${QUALIMARC_WUD_NOTIFICATION_SLACK_IDENTIFIER}-
+        WUD_REGISTRY_DOCKERHUB_USERNAME: ${WUD_DOCKERHUB_USER}
+        WUD_REGISTRY_DOCKERHUB_PASSWORD: ${WUD_DOCKERHUB_PASS}
+        WUD_LOG_LEVEL: info
 
-
-  #######################################
-  # qualimarc-watchtower
-  # Conteneur chargé de mettre à jour automatiquement toutes les N secondes
-  # les images docker des conteneurs surveillés (via le système de label/scope de watchtower)
-  # plus d'info : https://containrrr.dev/watchtower
-  # cf README.md pour explications : https://github.com/abes-esr/qualimarc-docker#d%C3%A9ploiement-continu
-  qualimarc-watchtower:
-    image: containrrr/watchtower:1.4.0
-    container_name: qualimarc-watchtower
-    restart: unless-stopped
-    mem_limit: ${MEM_LIMIT}
-    memswap_limit: ${MEM_LIMIT}
-    cpus: ${CPU_LIMIT}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_POLL_INTERVAL: 60
-      WATCHTOWER_DEBUG: "false"
-      WATCHTOWER_NO_STARTUP_MESSAGE: "true"
-      WATCHTOWER_WARN_ON_HEAD_FAILURE: "never"
-      WATCHTOWER_RUN_ONCE: ${QUALIMARC_WATCHTOWER_RUN_ONCE}
-      WATCHTOWER_NOTIFICATIONS: "slack"
-      WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: ${QUALIMARC_WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL}
-      WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER: ${QUALIMARC_WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER}
-      WATCHTOWER_NOTIFICATION_SLACK_CHANNEL: "#notif-qualimarc"
-      WATCHTOWER_SCOPE: "qualimarc-watchtower-scope"
-      REPO_USER: ${WATCHTOWER_DOCKERHUB_USER}
-      REPO_PASS: ${WATCHTOWER_DOCKERHUB_PASS}
-    labels:
-      - "com.centurylinklabs.watchtower.scope=qualimarc-watchtower-scope"
 
 
 
