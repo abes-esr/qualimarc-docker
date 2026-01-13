@@ -33,6 +33,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=nginx"
       - "wud.watch=true"
+      - "wud.registry=dockerhub"
 
 
   ############################
@@ -77,6 +78,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
       - "wud.watch=true"
+      - "wud.registry=dockerhub"
 
 
   qualimarc-batch:
@@ -113,6 +115,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
       - "wud.watch=true"
+      - "wud.registry=dockerhub"
 
   ##############################
   # qualimarc-db
