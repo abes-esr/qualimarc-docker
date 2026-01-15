@@ -32,9 +32,7 @@ services:
       - "co.elastic.logs/processors.add_fields.target="
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=nginx"
-      - "wud.scope=qualimarc"
       - "wud.watch=true"
-      - "wud.registry=dockerhub"
 
 
   ############################
@@ -78,9 +76,7 @@ services:
       - "co.elastic.logs/processors.add_fields.target="
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
-      - "wud.scope=qualimarc"
       - "wud.watch=true"
-      - "wud.registry=dockerhub"
 
 
   qualimarc-batch:
@@ -116,9 +112,7 @@ services:
       - "co.elastic.logs/processors.add_fields.target="
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
-      - "wud.scope=qualimarc"
       - "wud.watch=true"
-      - "wud.registry=dockerhub"
 
   ##############################
   # qualimarc-db
@@ -226,24 +220,16 @@ services:
       cpus: ${CPU_LIMIT}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
+      ports:
+        - 3000:3000
       environment:
-        WUD_DOCKER_HOST: unix:///var/run/docker.sock
-        WUD_TRIGGER_DOCKER_WATCH: "true"
-        WUD_WATCHER_LOCAL_CRON: "*/1 * * * *"
-        WUD_TRIGGER_DOCKER_AUTOUPDATE: "true"
-        WUD_TRIGGER_DOCKER_AUTOUPDATE_CLEANUP: "true"
-        WUD_FILTER_CONTAINER_ENABLE: "true"
-        WUD_FILTER_CONTAINER_NAME_REGEX: "^qualimarc-.*"
-        WUD_FILTER_LABEL_ENABLE: "true"
-        WUD_FILTER_LABEL_LABEL: "wud.scope"
-        WUD_FILTER_LABEL_VALUE: "qualimarc"
-        WUD_NOTIFIER_SLACK_ENABLED: "true"
-        WUD_NOTIFIER_SLACK_WEBHOOKURL: ${QUALIMARC_WUD_NOTIFICATION_SLACK_HOOK_URL}
-        WUD_NOTIFIER_SLACK_CHANNEL: "#notif-qualimarc"
-        WUD_NOTIFIER_SLACK_USERNAME: ${QUALIMARC_WUD_NOTIFICATION_SLACK_IDENTIFIER}-
-        WUD_REGISTRY_DOCKERHUB_ENABLED: "true"
-        WUD_REGISTRY_DOCKERHUB_USERNAME: ${WUD_DOCKERHUB_USER}
-        WUD_REGISTRY_DOCKERHUB_PASSWORD: ${WUD_DOCKERHUB_PASS}
+        WUD_WATCHER_LOCAL_WATCHBYDEFAULT: false
+
+        WUD_TRIGGER_SLACK_TEST_TOKEN: ${QUALIMARC_WUD_NOTIFICATION_SLACK_TOKEN}
+        WUD_TRIGGER_SLACK_TEST_CHANNEL: "#notif-qualimarc"
+
+        WUD_REGISTRY_HUB_PUBLIC_LOGIN: ${WUD_DOCKERHUB_USER}
+        WUD_REGISTRY_HUB_PUBLIC_PASSWORD: ${WUD_DOCKERHUB_PASS}
         WUD_LOG_LEVEL: info
 
 
