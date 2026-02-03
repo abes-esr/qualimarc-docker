@@ -33,7 +33,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_appli=qualimarc"
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=nginx"
       - "wud.watch=true"
-
+      - "wud.trigger.include=slack.qualimarc"
 
   ############################
   # qualimarc-api
