@@ -167,7 +167,9 @@ services:
       ADMINER_DEFAULT_SERVER: "qualimarc-db"
     logging:
       driver: none # pas de log pour adminer pour ne pas polluer
-
+    labels:
+      - "wud.watch=true"
+      - "wud.trigger.exclude=docker.upgrade,slack.notif"
 
 
   #######################################
@@ -218,7 +220,7 @@ services:
       - "co.elastic.logs/multiline.negate=true"
       - "co.elastic.logs/multiline.match=after"
       - "wud.watch=true"
-      - "wud.watch.digest=true"
+      - "wud.trigger.exclude=docker.upgrade,slack.notif"
 
 
 
