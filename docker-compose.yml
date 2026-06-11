@@ -178,7 +178,7 @@ services:
   # (dump tous les jours pour les sauvegardes)
   # https://github.com/tiredofit/docker-db-backup
   qualimarc-db-dumper:
-    image: tiredofit/db-backup:4.1.17
+    image: tiredofit/db-backup:4.1.21
     container_name: qualimarc-db-dumper
     restart: unless-stopped
     mem_limit: ${MEM_LIMIT}
