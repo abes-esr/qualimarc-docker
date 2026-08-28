@@ -34,6 +34,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=nginx"
       - "wud.watch=true"
       - "wud.watch.digest=true"
+      - "wud.trigger.exclude=docker.upgrade,slack.notif"
 
   ############################
   # qualimarc-api
@@ -78,6 +79,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
       - "wud.watch=true"
       - "wud.watch.digest=true"
+      - "wud.trigger.exclude=docker.upgrade,slack.notif"
 
 
   qualimarc-batch:
@@ -118,6 +120,7 @@ services:
       - "co.elastic.logs/processors.add_fields.fields.abes_middleware=java-spring"
       - "wud.watch=true"
       - "wud.watch.digest=true"
+      - "wud.trigger.exclude=docker.upgrade,slack.notif"
 
   ##############################
   # qualimarc-db
